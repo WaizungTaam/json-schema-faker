@@ -99,3 +99,7 @@ def generate_number(multiple_of=None,
     while number >= exclusive_maximum or number <= exclusive_minimum:
         number = multiple_of * random.randint(min_quotient, max_quotient)
     return number
+
+
+def generate_boolean():
+    return random.choice([True, False])
