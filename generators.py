@@ -1,8 +1,14 @@
 import math
 import random
+import string
+
+import exrex
 
 MAX_INTEGER = 9223372036854775807
 MIN_INTEGER = -9223372036854775808
+MAX_STRLEN = 15
+MIN_STRLEN = 0
+CHARACTERS = string.ascii_letters + string.digits
 
 
 def generate_integer(multiple_of=1,
@@ -107,3 +113,30 @@ def generate_boolean():
 
 def generate_null():
     return None
+
+
+def generate_string(max_length=MAX_STRLEN, min_length=MIN_STRLEN,
+                    pattern=None):
+    '''Generate a valid random string.
+
+    Ref:
+    https://json-schema.org/draft/2019-09/json-schema-validation.html#string
+
+    Args:
+        max_length (int): Upper limit of string length.
+        min_length (int): Lowet limit of string length.
+        pattern (str): A regular expression pattern.
+
+    Returns:
+        A valid random string.
+
+    '''
+    if pattern is not None:
+        s = exrex.getone(pattern)
+        if len(s) < min_length:
+            s += ' ' * (min_length - len(s))
+        if len(s) > max_length:
+            s = s[:max_length]
+        return s
+    length = random.randint(min_length, max_length)
+    return ''.join(random.choice(CHARACTERS) for _ in range(length))
