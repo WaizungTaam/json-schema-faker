@@ -103,3 +103,7 @@ def generate_number(multiple_of=None,
 
 def generate_boolean():
     return random.choice([True, False])
+
+
+def generate_null():
+    return None
