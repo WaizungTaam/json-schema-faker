@@ -177,7 +177,20 @@ def generate_array(items=[],
                    min_items=MIN_ITEMS,
                    unique_items=False,
                    **kwargs):
-    return [generate(s) for s in items]
+    if len(items) == 1:
+        schema = items[0]
+        count = random.randint(min_items, max_items)
+        if not unique_items:
+            return [generate(schema) for _ in range(count)]
+        existed = set()
+        array = []
+        while len(array) < count:
+            item = generate(schema)
+            if item not in existed:
+                array.append(item)
+                existed.add(item)
+        return array
+    return [generate(schema) for schema in items]
 
 
 def generate_object(properties=[],
