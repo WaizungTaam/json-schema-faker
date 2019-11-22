@@ -193,13 +193,23 @@ def generate_array(items=[],
     return [generate(schema) for schema in items]
 
 
-def generate_object(properties=[],
+def generate_object(properties={},
                     max_properties=None,
                     min_properties=None,
                     required=None,
                     dependent_required=None,
                     **kwargs):
-    return {k: generate(v) for k, v in properties.items()}
+    object_ = {}
+    for name, schema in properties.items():
+        if required:
+            if name in required:
+                object_[name] = generate(schema)
+            else:
+                if random.choice([True, False]):
+                    object_[name] = generate(schema)
+        else:
+            object_[name] = generate(schema)
+    return object_
 
 
 if __name__ == '__main__':
