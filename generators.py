@@ -8,7 +8,7 @@ import exrex
 MAX_INTEGER = 9223372036854775807
 MIN_INTEGER = -9223372036854775808
 MAX_STRLEN = 15
-MIN_STRLEN = 0
+MIN_STRLEN = 1
 CHARACTERS = string.ascii_letters + string.digits
 MAX_ITEMS = 20
 MIN_ITEMS = 0
@@ -21,6 +21,10 @@ def _camel_to_snake(s):
 
 def generate(schema):
     kwargs = {_camel_to_snake(k): v for k, v in schema.items()}
+    if 'enum' in schema:
+        return random.choice(schema['enum'])
+    if 'type' not in schema:
+        return None
     if schema['type'] == 'null':
         return generate_null(**kwargs)
     if schema['type'] == 'boolean':
@@ -172,13 +176,13 @@ def generate_string(max_length=MAX_STRLEN,
     return ''.join(random.choice(CHARACTERS) for _ in range(length))
 
 
-def generate_array(items=[],
+def generate_array(items={},
                    max_items=MAX_ITEMS,
                    min_items=MIN_ITEMS,
                    unique_items=False,
                    **kwargs):
-    if len(items) == 1:
-        schema = items[0]
+    if type(items) is dict:
+        schema = items
         count = random.randint(min_items, max_items)
         if not unique_items:
             return [generate(schema) for _ in range(count)]
@@ -213,29 +217,8 @@ def generate_object(properties={},
 
 
 if __name__ == '__main__':
-    print(generate({
-        "type": "object",
-        "properties": {
-            "dimensions": {
-                "type": "object",
-                "properties": {
-                    "length": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 40
-                    },
-                    "width": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 30
-                    },
-                    "height": {
-                        "type": "number",
-                        "minimum": 10,
-                        "maximum": 20
-                    }
-                },
-                "required": ["length", "width", "height"]
-            }
-        }
-    }))
+    file = 'list_res.schema.json'
+    import json
+    with open(file, mode='r', encoding='utf-8') as f:
+        schema = json.load(f)
+    print(generate(schema))
